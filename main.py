@@ -11,13 +11,14 @@ icon = r'C:\Users\azlotnik\PycharmProjects\dutgui\chipgui.png'
 # *****************************************************************************************
 
 
-PATH = r'C:\Users\azlotnik\OneDrive - Qualcomm\Desktop\pte_dut_database.csv'
-DELETED_PATH = r'C:\Users\azlotnik\OneDrive - Qualcomm\Desktop\deleted_dut_database.csv'
-UPDATED_PATH = r'C:\Users\azlotnik\OneDrive - Qualcomm\Desktop\updated_dut_database.csv'
-# PATH = r'\\filer4\Public\zlal\pte_dut_database.csv'
-# DELETED_PATH = r'\\filer4\Public\zlal\deleted_dut_database.csv'
+# PATH = r'C:\Users\azlotnik\OneDrive - Qualcomm\Desktop\pte_dut_database.csv'
+# DELETED_PATH = r'C:\Users\azlotnik\OneDrive - Qualcomm\Desktop\deleted_dut_database.csv'
+# UPDATED_PATH = r'C:\Users\azlotnik\OneDrive - Qualcomm\Desktop\updated_dut_database.csv'
+PATH = r'\\filer4\Public\zlal\pte_dut_database.csv'
+DELETED_PATH = r'\\filer4\Public\zlal\deleted_dut_database.csv'
+UPDATED_PATH = r'\\filer4\Public\zlal\updated_dut_database.csv'
 rows = []
-headers = ['dut_id', 'dut_type', 'revision', 'condition', 'location', 'info']
+headers = ['dut_id', 'dut_type', 'revision', 'condition', 'location', 'info', 'last_user']
 empty_result = ['', '', '', '', '', '']
 empty_type_result = [['', '', '', '', '', '']]
 
@@ -88,6 +89,9 @@ def update_new_dut(up_data):
 def update_dut_info(info):
     for row in range(len(rows)):
         if rows[row][0] == info[0]:
+            with open(UPDATED_PATH, 'a+', encoding='utf-8-sig', newline='') as updated_file:
+                writer = csv.writer(updated_file)
+                writer.writerow(rows[row])
             rows[row] = info
     with open(PATH, 'w', encoding='utf-8-sig', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -143,7 +147,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
 
         # Condition combo box
-        cond_list = ['', 'Good', 'Problematic', 'Bad']
+        cond_list = ['', 'Good', 'Problematic', 'Bad', 'Unknown']
         self.condition_box = QtWidgets.QComboBox(self.gridLayoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -648,6 +652,35 @@ class Ui_MainWindow(object):
             except:
                 self.error_file_opened()
 
+    def update_info_only(self):
+        invalid_data = False
+        idtext = self.id_text.text()
+        if not (idtext[:2] == 'BA' and idtext[2:].isdigit() and len(idtext) == 8):
+            self.unexpected_data()
+            return
+        if not_existed_dut(idtext):
+            self.not_exist_error()
+            return
+        infotext = self.info_text.text()
+        user = gt.getuser()
+        dut_data = search_by_id(idtext)
+        dut_data[5] = infotext
+        dut_data[6] = user
+        dut = dut_data
+        if not_existed_dut(idtext):
+            self.not_exist_error()
+            return
+        for text in dut_data:
+            if not text.isascii():
+                invalid_data = True
+                self.unexpected_data()
+                break
+        if not invalid_data:
+            try:
+                self.update_dut_button_clicked(dut)
+            except:
+                self.error_file_opened()
+
     # select row data by mouse
     def selection_change(self, selected, deselected):
         selected_row = None
@@ -710,7 +743,7 @@ class Ui_MainWindow(object):
         self.condition_button.clicked.connect(self.cond_search)
         self.delete_dut_button.clicked.connect(self.delete_dut)
         self.update_dut_button.clicked.connect(self.get_update_info)
-        self.update_info_button.clicked.connect(self.get_update_info)
+        self.update_info_button.clicked.connect(self.update_info_only)
         self.create_new_dut_button.clicked.connect(self.get_new_dut_data)
 
 
