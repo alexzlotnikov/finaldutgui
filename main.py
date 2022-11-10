@@ -5,6 +5,7 @@ import csv
 import getpass as gt
 from PyQt5 import QtWidgets
 import sys
+from datetime import date
 
 icon = r'C:\Users\azlotnik\PycharmProjects\dutgui\chipgui.png'
 
@@ -117,7 +118,7 @@ def delete_selected_dut(dut_num):
     for row_num in range(len(rows)):
         if rows[row_num][0] == dut_num:
             try:
-                deleted_dut = rows.pop(row_num) + [gt.getuser()]
+                deleted_dut = rows.pop(row_num) + [gt.getuser() + ' ' + str(date.today())]
                 with open(PATH, 'w', encoding='utf-8-sig', newline='') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow(headers)
@@ -543,7 +544,7 @@ class Ui_MainWindow(object):
         condition_text = self.condition_box.currentText()
         location_text = self.location_box.currentText()
         infotext = self.info_text.text()
-        user = gt.getuser()
+        user = gt.getuser() + ' ' + str(date.today())
         dut_data = [idtext, type_text, revision_text, condition_text, location_text, infotext, user]
         if existed_dut(idtext):
             self.exist_error()
@@ -633,7 +634,7 @@ class Ui_MainWindow(object):
         condition_text = self.condition_box.currentText()
         location_text = self.location_box.currentText()
         infotext = self.info_text.text()
-        user = gt.getuser()
+        user = gt.getuser() + ' ' + str(date.today())
         dut_data = [idtext, type_text, revision_text, condition_text, location_text, infotext, user]
         if not (idtext[:2] == 'BA' and idtext[2:].isdigit() and len(idtext) == 8):
             self.unexpected_data()
@@ -662,7 +663,7 @@ class Ui_MainWindow(object):
             self.not_exist_error()
             return
         infotext = self.info_text.text()
-        user = gt.getuser()
+        user = gt.getuser() + ' ' + str(date.today())
         dut_data = search_by_id(idtext)
         dut_data[5] = infotext
         dut_data[6] = user
