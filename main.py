@@ -255,7 +255,8 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.create_new_dut_button, 0, 3, 1, 1)
 
         # Revision text line
-        revisions = ['None', 'A', "B", 'C', 'D', 'E', "F", 'G', 'H', 'I', 'J', 'K', 'Other']
+        revisions = ['None', 'A', "B", 'C', 'D', 'E', "F", 'G', 'H', 'I', 'J', 'K', 'L', 'M', "N", "O", "P", "Q", "R",
+                     "S", "T", "U", "V", "W", "X", "Y", "Z", 'Other']
         self.rev_box = QtWidgets.QComboBox(self.gridLayoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
